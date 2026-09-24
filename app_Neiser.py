@@ -131,8 +131,6 @@ if opcion == "💬 Chatbot":
                         respuesta = (f"No pude generar el **{titulo.lower()}**: no hay datos "
                                      "para ese periodo o falló la consulta a Groq.")
                     else:
-                        st.info("📲 Abriendo WhatsApp Web para enviar el reporte… "
-                                "no uses el mouse ni el teclado unos segundos.")
                         ok, detalle = enviar_por_whatsapp(
                             titulo, contenido, usuario=st.session_state.usuario
                         )
@@ -255,7 +253,7 @@ elif opcion == "📊 Reportes IA":
             )
         with col_wsp:
             if st.button("📲 Enviar por WhatsApp"):
-                with st.spinner("Abriendo WhatsApp Web y enviando..."):
+                with st.spinner("Enviando por WhatsApp..."):
                     canales = enviar_notificacion_externa(
                         rep["titulo"].upper(), rep["contenido"],
                         usuario=st.session_state.usuario
@@ -264,8 +262,8 @@ elif opcion == "📊 Reportes IA":
                     st.success(f"✅ Reporte enviado por: {', '.join(canales)}")
                 else:
                     st.error(
-                        "No se pudo enviar. Revisa NUMERO_DOCENTE en .env y que "
-                        "WhatsApp Web tenga la sesión iniciada."
+                        "No se pudo enviar. Revisa NUMERO_DOCENTE y las credenciales "
+                        "de la API de WhatsApp (GREEN_API_* o TWILIO_*)."
                     )
 
 # ZERO / ONE / FEW-SHOT
@@ -458,7 +456,7 @@ elif opcion == "🔔 Notificaciones":
                 f"[{n['prioridad']}] {n['tipo']} ({n['fecha'][:16].replace('T', ' ')}):\n{n['mensaje']}"
                 for _, n in pendientes.iterrows()
             )
-            with st.spinner("Abriendo WhatsApp Web y enviando..."):
+            with st.spinner("Enviando por WhatsApp..."):
                 canales = enviar_notificacion_externa(
                     "NOTIFICACIONES PENDIENTES", resumen,
                     usuario=st.session_state.usuario

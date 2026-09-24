@@ -68,7 +68,7 @@ def _texto_plano(mensaje):
 
 
 def notificar_whatsapp(mensaje):
-    """Envía notificación por WhatsApp Web (opcional, requiere NUMERO_DOCENTE)."""
+    """Envía notificación por WhatsApp vía API (opcional, requiere NUMERO_DOCENTE)."""
     if os.getenv("WHATSAPP_ACTIVO", "1") == "0" or not os.getenv("NUMERO_DOCENTE"):
         return False
     from enviar_whatsapp import enviar_whatsapp
@@ -89,9 +89,8 @@ def enviar_por_whatsapp(titulo, mensaje, usuario=None):
         return False, "El envío por WhatsApp está desactivado (WHATSAPP_ACTIVO=0 en .env)."
     if not os.getenv("NUMERO_DOCENTE"):
         return False, "Falta NUMERO_DOCENTE en el archivo .env."
-    if notificar_whatsapp(_con_encabezado(titulo, mensaje, usuario)):
-        return True, "Enviado"
-    return False, "WhatsApp Web no pudo enviar el mensaje (revisa la consola)."
+    from enviar_whatsapp import enviar_whatsapp_detalle
+    return enviar_whatsapp_detalle(_texto_plano(_con_encabezado(titulo, mensaje, usuario)))
 
 
 def enviar_notificacion_externa(titulo, mensaje, usuario=None):
