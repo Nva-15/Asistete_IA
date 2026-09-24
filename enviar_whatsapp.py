@@ -5,7 +5,6 @@
 # Proveedores soportados (se usa el primero que esté configurado en .env / secrets):
 #   1. Green-API  -> GREEN_API_ID_INSTANCE, GREEN_API_TOKEN (opcional GREEN_API_URL)
 #   2. Twilio     -> TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_FROM
-#   3. pywhatkit  -> solo en local (abre WhatsApp Web en el navegador)
 import os
 import requests
 from dotenv import load_dotenv
@@ -68,20 +67,6 @@ def _enviar_twilio(numero, mensaje):
     return True, "Enviado por Twilio"
 
 
-def _enviar_pywhatkit(numero, mensaje):
-    # Import aquí: pywhatkit solo funciona en una PC con navegador (no en la nube)
-    import pywhatkit
-
-    pywhatkit.sendwhatmsg_instantly(
-        phone_no=numero,
-        message=mensaje,
-        wait_time=20,     # segundos que espera a que cargue WhatsApp Web
-        tab_close=True,   # cierra la pestaña al terminar
-        close_time=5,
-    )
-    return True, "Enviado por WhatsApp Web"
-
-
 def enviar_whatsapp_detalle(mensaje: str):
     """Envía el mensaje al NUMERO_DOCENTE. Devuelve (ok, detalle)."""
     numero = _numero_destino()
@@ -92,10 +77,8 @@ def enviar_whatsapp_detalle(mensaje: str):
             return _enviar_green_api(numero, mensaje)
         if os.getenv("TWILIO_ACCOUNT_SID") and os.getenv("TWILIO_AUTH_TOKEN"):
             return _enviar_twilio(numero, mensaje)
-        return _enviar_pywhatkit(numero, mensaje)
-    except ImportError:
         return False, ("No hay API de WhatsApp configurada. Define GREEN_API_ID_INSTANCE "
-                       "y GREEN_API_TOKEN (o las variables de Twilio).")
+                       "y GREEN_API_TOKEN (o las variables de Twilio) en .env / secrets.")
     except Exception as e:
         return False, f"Error al enviar WhatsApp: {e}"
 
